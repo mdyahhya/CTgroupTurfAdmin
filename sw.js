@@ -1,7 +1,7 @@
 const CACHE_NAME = 'turf-admin-v1.0.0';
 const urlsToCache = [
     '/',
-    '/admin.html',
+    '/index.html',
     '/manifest.json',
     '/turfadmin.png',
     '/turfadmin.png',
@@ -51,7 +51,7 @@ self.addEventListener('fetch', event => {
                 })
                 .catch(() => {
                     console.log('Network failed, using cache');
-                    return caches.match(event.request) || caches.match('/admin.html');
+                    return caches.match(event.request) || caches.match('/index.html');
                 })
         );
     } else {
@@ -140,7 +140,7 @@ self.addEventListener('notificationclick', event => {
     
     if (event.action === 'view') {
         event.waitUntil(
-            clients.openWindow('/admin.html')
+            clients.openWindow('/index.html')
         );
     }
 });

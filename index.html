@@ -609,6 +609,29 @@ body {
     box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
 }
 
+/* Update admin login modal to be more persistent */
+#adminLoginModal.modal {
+    pointer-events: all !important;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+#adminLoginModal .modal-content {
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    border: 2px solid rgba(52, 152, 219, 0.3) !important;
+}
+
+/* Hide admin dashboard completely when not logged in */
+#adminDashboard {
+    display: none;
+}
+
+/* Ensure body background is visible when logged out */
+body {
+    background-color: #f5f5f5 !important;
+    min-height: 100vh;
+}
 
 
     </style>
@@ -665,7 +688,7 @@ body {
     <!-- Add/Edit Turf Modal -->
         <div id="turfModal" class="modal">
             <div class="modal-content">
-                <span class="close" onclick="closeModal('turfModal')">&times;</span>
+                
                 <h2 id="turfModalTitle">Add New Turf</h2>
                 <form id="turfForm">
     <input type="hidden" id="turfId">
@@ -1012,6 +1035,117 @@ function formatTimeForInput(timeString) {
     return timeString;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Update the closeModal function to prevent closing admin login modal
+function closeModal(modalId) {
+    // Prevent closing admin login modal if admin is not logged in
+    if (modalId === 'adminLoginModal' && !currentAdmin) {
+        return; // Don't close the modal
+    }
+    
+    document.getElementById(modalId).style.display = 'none';
+    document.body.classList.remove('modal-open');
+    const scrollY = document.body.style.top;
+    document.body.style.top = '';
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+}
+
+// Update the window click handler to prevent closing admin login modal
+window.onclick = function(event) {
+    // If admin login modal is open and admin is not logged in, don't close anything
+    const adminLoginModal = document.getElementById('adminLoginModal');
+    if (adminLoginModal && adminLoginModal.style.display === 'block' && !currentAdmin) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    }
+    
+    // For other modals, close normally
+    if (event.target.classList.contains('modal') && event.target.id !== 'adminLoginModal') {
+        event.target.style.display = 'none';
+        document.body.classList.remove('modal-open');
+        const scrollY = document.body.style.top;
+        document.body.style.top = '';
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+}
+
+// Add this new function to completely lock the admin login modal
+function lockAdminLoginModal() {
+    const adminLoginModal = document.getElementById('adminLoginModal');
+    if (adminLoginModal && !currentAdmin) {
+        // Prevent all click events from bubbling up
+        adminLoginModal.addEventListener('click', function(e) {
+            if (e.target === adminLoginModal) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        });
+        
+        // Prevent modal content clicks from closing
+        const modalContent = adminLoginModal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+    }
+}
+
+// Update your checkAdminAuth function
+function checkAdminAuth() {
+    const admin = localStorage.getItem('currentAdmin');
+    if (admin) {
+        currentAdmin = JSON.parse(admin);
+        showAdminDashboard();
+    } else {
+        showModal('adminLoginModal');
+        lockAdminLoginModal(); // Add this line
+    }
+}
+
+// Update your adminLogout function
+function adminLogout() {
+    localStorage.removeItem('currentAdmin');
+    currentAdmin = null;
+    document.getElementById('adminDashboard').style.display = 'none';
+    showModal('adminLoginModal');
+    lockAdminLoginModal(); // Add this line
+}
+
+// Update keyboard event handler to prevent closing admin login modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const adminLoginModal = document.getElementById('adminLoginModal');
+        if (adminLoginModal && adminLoginModal.style.display === 'block' && !currentAdmin) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+        
+        // Close other modals normally
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (modal.style.display === 'block' && modal.id !== 'adminLoginModal') {
+                modal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+            }
+        });
+    }
+});
+
 // Update the form submission validation
 
 
@@ -1026,15 +1160,7 @@ function formatTimeForInput(timeString) {
 
 
 
-        function checkAdminAuth() {
-            const admin = localStorage.getItem('currentAdmin');
-            if (admin) {
-                currentAdmin = JSON.parse(admin);
-                showAdminDashboard();
-            } else {
-                showModal('adminLoginModal');
-            }
-        }
+        
 
         async function adminLogin() {
             const adminCode = document.getElementById('adminCode').value;
@@ -1077,12 +1203,7 @@ function formatTimeForInput(timeString) {
             }
         }
 
-        function adminLogout() {
-            localStorage.removeItem('currentAdmin');
-            currentAdmin = null;
-            document.getElementById('adminDashboard').style.display = 'none';
-            showModal('adminLoginModal');
-        }
+        
 
         function showAdminDashboard() {
             document.getElementById('adminDashboard').style.display = 'block';
@@ -1387,19 +1508,9 @@ function formatTimeForInput(timeString) {
             document.getElementById(modalId).style.display = 'block';
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
+        
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        }
+       
 
         // Utility functions
         function formatTime(time) {

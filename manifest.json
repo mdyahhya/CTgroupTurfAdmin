@@ -2,7 +2,7 @@
   "name": "Turf Booking Admin Panel",
   "short_name": "TurfAdmin",
   "description": "Admin panel for managing turf bookings",
-  "start_url": "/admin.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3498db",
@@ -65,7 +65,7 @@
       "name": "Pending Bookings",
       "short_name": "Pending",
       "description": "View pending booking requests",
-      "url": "/admin.html#bookings",
+      "url": "/index.html#bookings",
       "icons": [
         {
           "src": "icons/icon-192x192.png",
@@ -77,7 +77,7 @@
       "name": "Manage Turfs",
       "short_name": "Turfs",
       "description": "Add or edit turfs",
-      "url": "/admin.html#turfs",
+      "url": "/index.html#turfs",
       "icons": [
         {
           "src": "icons/icon-192x192.png",

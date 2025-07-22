@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Turf Booking System</title>
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3498db">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Turf Admin">
+    <meta name="msapplication-TileColor" content="#3498db">
+    <meta name="description" content="Admin panel for turf booking management">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        /* Mobile Container - Hidden by default */
+
+
+.container {
+    width: 100vw;
+    max-width: 375px;
+    height: 100vh;
+    max-height: 770px;
+    margin: 0 auto;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    border-radius: 0;
+}
+/* Custom scrollbar for container */
+.container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.3);
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.5);
+}
+
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10px auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 95%;
+    max-width: 350px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    text-align: center;
+    font-size: 18px;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.modal-content button:hover {
+    background-color: #2980b9;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Dashboard */
+.dashboard {
+    display: none;
+    padding: 15px 10px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.header h1 {
+    color: #2c3e50;
+    font-size: 18px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.admin-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+.admin-info span {
+    font-weight: bold;
+    color: #3498db;
+    font-size: 13px;
+}
+
+.admin-info button {
+    padding: 6px 12px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.admin-info button:hover {
+    background-color: #c0392b;
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+    display: flex;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    flex-direction: column;
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 12px 15px;
+    text-align: center;
+    background-color: #ecf0f1;
+    cursor: pointer;
+    border-bottom: 1px solid #bdc3c7;
+    transition: background-color 0.3s;
+    font-size: 13px;
+}
+
+.nav-tab:last-child {
+    border-bottom: none;
+}
+
+.nav-tab.active {
+    background-color: #3498db;
+    color: white;
+}
+
+.nav-tab:hover:not(.active) {
+    background-color: #d5dbdb;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+/* Bookings Container */
+.bookings-container {
+    display: grid;
+    gap: 15px;
+}
+
+.booking-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card.confirmed {
+    border-left: 4px solid #27ae60;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.booking-header h3 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 16px;
+}
+
+.booking-id {
+    background-color: #ecf0f1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+.booking-details {
+    margin-bottom: 12px;
+}
+
+.booking-details p {
+    margin: 6px 0;
+    line-height: 1.4;
+    font-size: 13px;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.booking-actions button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    flex: 1;
+    min-width: 80px;
+}
+
+.confirm-btn {
+    background-color: #27ae60;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #229954;
+}
+
+.reject-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Turf Card */
+.turf-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.turf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.turf-header h3 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 16px;
+}
+
+.turf-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.turf-actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.turf-actions button:first-child {
+    background-color: #f39c12;
+    color: white;
+}
+
+.turf-actions button:first-child:hover {
+    background-color: #d68910;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.turf-details p {
+    margin: 6px 0;
+    line-height: 1.4;
+    font-size: 13px;
+}
+
+/* Add Turf Button */
+#turfsTab button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-size: 14px;
+    width: 100%;
+}
+
+#turfsTab button:hover {
+    background-color: #2980b9;
+}
+
+/* Turf Form */
+#turfForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#turfForm label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+#turfForm input,
+#turfForm textarea {
+    padding: 10px 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+#turfForm input:focus,
+#turfForm textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#turfForm button {
+    padding: 12px;
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#turfForm button:hover {
+    transform: translateY(-1px);
+}
+
+#turfForm textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+#turfModalTitle {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+    margin-top: 0;
+    font-size: 18px;
+}
+
+/* Loading and Error States */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    flex-direction: column;
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+.error-message {
+    text-align: center;
+    color: #e74c3c;
+    background: #ffeaea;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.retry-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+/* Custom scrollbar */
+.container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background: rgba(52, 152, 219, 0.3);
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background: rgba(52, 152, 219, 0.5);
+}
+.time-input-container {
+    display: flex;
+    gap: 8px;
+    margin: 8px 0 15px 0;
+}
+
+.time-input-container select {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+}
+
+.time-input-container select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.time-input-container select:nth-child(1) {
+    flex: 1;
+}
+
+.time-input-container select:nth-child(2) {
+    flex: 1;
+}
+
+.time-input-container select:nth-child(3) {
+    flex: 0.8;
+}
+
+.install-admin-btn {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    position: fixed;
+    top: 10px;
+    right: 60px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
+}
+
+.install-admin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Login</h2>
+            <input type="text" id="adminCode" placeholder="Admin Code" required>
+            <input type="password" id="adminPassword" placeholder="Admin Password" required>
+            <button onclick="adminLogin()">Login</button>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="dashboard">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <div class="admin-info">
+                <span id="adminName"></span>
+                <button onclick="adminLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showAdminTab('bookings')">Booking Requests</div>
+            <div class="nav-tab" onclick="showAdminTab('confirmed')">Confirmed Bookings</div>
+            <div class="nav-tab" onclick="showAdminTab('turfs')">Manage Turfs</div>
+        </div>
+
+        <!-- Booking Requests Tab -->
+        <div id="bookingsTab" class="tab-content active">
+            <h2>Pending Booking Requests</h2>
+            <div id="pendingBookings" class="bookings-container"></div>
+        </div>
+
+        <!-- Confirmed Bookings Tab -->
+        <div id="confirmedTab" class="tab-content">
+            <h2>Confirmed Bookings</h2>
+            <div id="confirmedBookings" class="bookings-container"></div>
+        </div>
+
+        <!-- Manage Turfs Tab -->
+        <div id="turfsTab" class="tab-content">
+            <h2>Manage Turfs</h2>
+            <button onclick="showAddTurfForm()">Add New Turf</button>
+            <div id="turfsContainer"></div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Turf Modal -->
+    <!-- Add/Edit Turf Modal -->
+        <div id="turfModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('turfModal')">&times;</span>
+                <h2 id="turfModalTitle">Add New Turf</h2>
+                <form id="turfForm">
+    <input type="hidden" id="turfId">
+    <input type="text" id="turfName" placeholder="Turf Name" required>
+    <input type="number" id="turfPrice" placeholder="Price per hour" min="1" step="1" required>
+    <textarea id="turfDescription" placeholder="Description" rows="4" required></textarea>
+    <input type="text" id="turfImageUrls" placeholder="Image URLs (comma separated)">
+    
+    <label for="openingTime">Opening Time:</label>
+    <div class="time-input-container">
+        <select id="openingHour" required>
+            <option value="">Hour</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+        <select id="openingMinute" required>
+            <option value="00">00</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+        </select>
+        <select id="openingPeriod" required>
+            <option value="">AM/PM</option>
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+        </select>
+    </div>
+    
+    <label for="closingTime">Closing Time:</label>
+    <div class="time-input-container">
+        <select id="closingHour" required>
+            <option value="">Hour</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+        <select id="closingMinute" required>
+            <option value="00">00</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+        </select>
+        <select id="closingPeriod" required>
+            <option value="">AM/PM</option>
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+        </select>
+    </div>
+    
+    <button type="submit">Save Turf</button>
+</form>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Global variables
+        let currentAdmin = null;
+        let pendingBookings = [];
+        let confirmedBookings = [];
+        let adminTurfs = [];
+
+        // Supabase configuration
+        const SUPABASE_URL = 'https://ktqwhwzbxyoplawjmbao.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cXdod3pieHlvcGxhd2ptYmFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMzQ2ODgsImV4cCI6MjA2ODYxMDY4OH0.mo0mu-k3b_saK3I4gAGr4OIZcGZdRF5ogFMTqeijKas';
+        let supabase;
+
+        // Initialize Supabase client
+        function initializeSupabase() {
+            try {
+                console.log("Initializing Supabase client...");
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                return true;
+            } catch (error) {
+                console.error('Error initializing Supabase:', error);
+                return false;
+            }
+        }
+
+        // Initialize admin panel
+        window.onload = function() {
+            if (initializeSupabase()) {
+                checkAdminAuth();
+            } else {
+                alert('Failed to initialize database connection');
+            }
+        };
+
+// Add this helper function to convert 12-hour to 24-hour format
+// Function to convert 12-hour format to 24-hour format
+function convertTo24Hour(hour, minute, period) {
+    let hour24 = parseInt(hour);
+    
+    if (period === 'AM') {
+        if (hour24 === 12) {
+            hour24 = 0; // 12 AM = 00:00
+        }
+    } else if (period === 'PM') {
+        if (hour24 !== 12) {
+            hour24 += 12; // 1 PM = 13:00, but 12 PM = 12:00
+        }
+    }
+    
+    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+}
+
+// Function to convert 24-hour format to 12-hour format
+function convertTo12Hour(time24h) {
+    if (!time24h) return { hour: '', minute: '00', period: 'AM' };
+    
+    const [hours, minutes] = time24h.split(':');
+    const hour24 = parseInt(hours);
+    let hour12, period;
+    
+    if (hour24 === 0) {
+        hour12 = 12;
+        period = 'AM';
+    } else if (hour24 < 12) {
+        hour12 = hour24;
+        period = 'AM';
+    } else if (hour24 === 12) {
+        hour12 = 12;
+        period = 'PM';
+    } else {
+        hour12 = hour24 - 12;
+        period = 'PM';
+    }
+    
+    return {
+        hour: hour12.toString(),
+        minute: minutes,
+        period: period
+    };
+}
+
+// Update the editTurf function
+function editTurf(turfId) {
+    const turf = adminTurfs.find(t => t.turf_id === turfId);
+    if (!turf) return;
+
+    document.getElementById('turfModalTitle').textContent = 'Edit Turf';
+    document.getElementById('turfId').value = turf.turf_id;
+    document.getElementById('turfName').value = turf.name;
+    document.getElementById('turfPrice').value = turf.price;
+    document.getElementById('turfDescription').value = turf.description;
+    document.getElementById('turfImageUrls').value = turf.image_urls || '';
+    
+    // Convert and set opening time
+    const openingTime = convertTo12Hour(turf.opening_time);
+    document.getElementById('openingHour').value = openingTime.hour;
+    document.getElementById('openingMinute').value = openingTime.minute;
+    document.getElementById('openingPeriod').value = openingTime.period;
+    
+    // Convert and set closing time
+    const closingTime = convertTo12Hour(turf.closing_time);
+    document.getElementById('closingHour').value = closingTime.hour;
+    document.getElementById('closingMinute').value = closingTime.minute;
+    document.getElementById('closingPeriod').value = closingTime.period;
+    
+    showModal('turfModal');
+}
+
+// Update the form submission
+// Update this part in the form submission event listener
+document.getElementById('turfForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const turfId = document.getElementById('turfId').value;
+    const turfName = document.getElementById('turfName').value.trim();
+    const turfPrice = parseInt(document.getElementById('turfPrice').value);
+    const turfDescription = document.getElementById('turfDescription').value.trim();
+    const turfImageUrls = document.getElementById('turfImageUrls').value.trim();
+    
+    // Get opening time values
+    const openingHour = document.getElementById('openingHour').value;
+    const openingMinute = document.getElementById('openingMinute').value;
+    const openingPeriod = document.getElementById('openingPeriod').value;
+    
+    // Get closing time values
+    const closingHour = document.getElementById('closingHour').value;
+    const closingMinute = document.getElementById('closingMinute').value;
+    const closingPeriod = document.getElementById('closingPeriod').value;
+
+    // Validation
+    if (!turfName || !turfPrice || !turfDescription) {
+        alert('Please fill all required fields');
+        return;
+    }
+
+    if (!openingHour || !openingMinute || !openingPeriod) {
+        alert('Please select complete opening time');
+        return;
+    }
+
+    if (!closingHour || !closingMinute || !closingPeriod) {
+        alert('Please select complete closing time');
+        return;
+    }
+
+    if (turfPrice < 1) {
+        alert('Price must be at least ₹1 per hour');
+        return;
+    }
+
+    // Convert to 24-hour format for storage
+    const openingTime = convertTo24Hour(openingHour, openingMinute, openingPeriod);
+    const closingTime = convertTo24Hour(closingHour, closingMinute, closingPeriod);
+    
+    // Updated validation logic for overnight operations
+    const openMinutes = convertTimeToMinutes(openingTime);
+    let closeMinutes = convertTimeToMinutes(closingTime);
+    
+    // If closing time is earlier in 24-hour format, assume it's next day
+    if (closeMinutes <= openMinutes) {
+        // Allow overnight operations (e.g., 6 AM to 12 AM next day)
+        closeMinutes += 24 * 60; // Add 24 hours worth of minutes
+    }
+    
+    // Only validate if it's the same day and closing is not at least 1 hour later
+    const timeDifference = closeMinutes - openMinutes;
+    if (timeDifference < 60) { // Less than 1 hour
+        alert('Closing time must be at least 1 hour after opening time');
+        return;
+    }
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Saving...';
+    submitBtn.disabled = true;
+
+    try {
+        const turfData = {
+            name: turfName,
+            price: turfPrice,
+            description: turfDescription,
+            image_urls: turfImageUrls || null,
+            opening_time: openingTime,
+            closing_time: closingTime,
+            admin_code: currentAdmin.admin_code,
+            admin_password: currentAdmin.admin_password
+        };
+
+        let result;
+        if (turfId) {
+            result = await supabase
+                .from('turfs')
+                .update(turfData)
+                .eq('turf_id', parseInt(turfId))
+                .select();
+        } else {
+            result = await supabase
+                .from('turfs')
+                .insert([turfData])
+                .select();
+        }
+
+        if (result.error) {
+            console.error('Error saving turf:', result.error);
+            alert(`Failed to save turf: ${result.error.message}`);
+            return;
+        }
+
+        alert(turfId ? 'Turf updated successfully!' : 'Turf added successfully!');
+        closeModal('turfModal');
+        loadAdminTurfs();
+        
+        this.reset();
+        document.getElementById('turfId').value = '';
+        
+    } catch (error) {
+        console.error('Error saving turf:', error);
+        alert('Failed to save turf. Please try again.');
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+// Helper function to convert time to minutes for comparison
+function convertTimeToMinutes(timeString) {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
+// Clear form function
+function showAddTurfForm() {
+    document.getElementById('turfModalTitle').textContent = 'Add New Turf';
+    document.getElementById('turfForm').reset();
+    document.getElementById('turfId').value = '';
+    
+    // Reset dropdowns to default
+    document.getElementById('openingHour').value = '';
+    document.getElementById('openingMinute').value = '00';
+    document.getElementById('openingPeriod').value = '';
+    document.getElementById('closingHour').value = '';
+    document.getElementById('closingMinute').value = '00';
+    document.getElementById('closingPeriod').value = '';
+    
+    showModal('turfModal');
+}
+
+// Update the formatTimeForInput function
+function formatTimeForInput(timeString) {
+    if (!timeString) return '';
+    
+    // If it's already in HH:MM format (24-hour), return as is
+    if (timeString.match(/^\d{1,2}:\d{2}$/)) {
+        const [hours, minutes] = timeString.split(':');
+        return `${hours.padStart(2, '0')}:${minutes}`;
+    }
+    
+    // If it's in HH:MM:SS format, remove seconds
+    if (timeString.match(/^\d{1,2}:\d{2}:\d{2}$/)) {
+        return timeString.substring(0, 5);
+    }
+    
+    // If it's in 12-hour format, convert to 24-hour
+    if (timeString.includes('AM') || timeString.includes('PM') || timeString.includes('am') || timeString.includes('pm')) {
+        return convertTo24Hour(timeString);
+    }
+    
+    return timeString;
+}
+
+// Update the form submission validation
+
+
+
+
+
+
+
+
+
+
+
+
+
+        function checkAdminAuth() {
+            const admin = localStorage.getItem('currentAdmin');
+            if (admin) {
+                currentAdmin = JSON.parse(admin);
+                showAdminDashboard();
+            } else {
+                showModal('adminLoginModal');
+            }
+        }
+
+        async function adminLogin() {
+            const adminCode = document.getElementById('adminCode').value;
+            const adminPassword = document.getElementById('adminPassword').value;
+
+            if (!adminCode || !adminPassword) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            try {
+                // Check admin credentials in turfs table
+                const { data: turfs, error } = await supabase
+                    .from('turfs')
+                    .select('*')
+                    .eq('admin_code', adminCode)
+                    .eq('admin_password', adminPassword);
+
+                if (error) {
+                    console.error('Admin login error:', error);
+                    alert('Login failed. Please try again.');
+                    return;
+                }
+
+                if (turfs.length > 0) {
+                    currentAdmin = { 
+                        admin_code: adminCode, 
+                        admin_password: adminPassword,
+                        name: `Admin (${adminCode})`
+                    };
+                    localStorage.setItem('currentAdmin', JSON.stringify(currentAdmin));
+                    closeModal('adminLoginModal');
+                    showAdminDashboard();
+                } else {
+                    alert('Invalid admin credentials');
+                }
+            } catch (error) {
+                console.error('Admin login error:', error);
+                alert('Login failed. Please try again.');
+            }
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('currentAdmin');
+            currentAdmin = null;
+            document.getElementById('adminDashboard').style.display = 'none';
+            showModal('adminLoginModal');
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('adminDashboard').style.display = 'block';
+            document.getElementById('adminName').textContent = currentAdmin.name;
+            loadPendingBookings();
+            loadConfirmedBookings();
+            loadAdminTurfs();
+        }
+
+        async function loadPendingBookings() {
+            try {
+                // Get turfs managed by this admin
+                const { data: adminTurfsData, error: turfsError } = await supabase
+                    .from('turfs')
+                    .select('turf_id')
+                    .eq('admin_code', currentAdmin.admin_code)
+                    .eq('admin_password', currentAdmin.admin_password);
+
+                if (turfsError) {
+                    console.error('Error loading admin turfs:', turfsError);
+                    return;
+                }
+
+                const turfIds = adminTurfsData.map(turf => turf.turf_id);
+
+                // Get pending bookings for admin's turfs
+                const { data: bookingsData, error } = await supabase
+                    .from('bookings')
+                    .select(`
+                        *,
+                        turfs (name, price)
+                    `)
+                    .in('turf_id', turfIds)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading pending bookings:', error);
+                    return;
+                }
+
+                pendingBookings = bookingsData;
+                displayPendingBookings();
+            } catch (error) {
+                console.error('Error loading pending bookings:', error);
+            }
+        }
+
+        function displayPendingBookings() {
+            const container = document.getElementById('pendingBookings');
+            
+            if (pendingBookings.length === 0) {
+                container.innerHTML = '<p>No pending booking requests.</p>';
+                return;
+            }
+
+            container.innerHTML = pendingBookings.map(booking => `
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <h3>${booking.turfs ? booking.turfs.name : 'Unknown Turf'}</h3>
+                        <span class="booking-id">ID: ${booking.booking_id}</span>
+                    </div>
+                    <div class="booking-details">
+                        <p><strong>Customer:</strong> ${booking.user_name}</p>
+                        <p><strong>Phone:</strong> ${booking.user_phone}</p>
+                        <p><strong>Date:</strong> ${booking.booking_date}</p>
+                        <p><strong>Time Slots:</strong> ${booking.time_slots}</p>
+                        <p><strong>Total Hours:</strong> ${booking.total_hours}</p>
+                        <p><strong>Total Price:</strong> ₹${booking.total_price}</p>
+                        <p><strong>Requested on:</strong> ${new Date(booking.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <div class="booking-actions">
+                        <button onclick="confirmBooking(${booking.booking_id})" class="confirm-btn">Confirm</button>
+                        <button onclick="rejectBooking(${booking.booking_id})" class="reject-btn">Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function confirmBooking(bookingId) {
+            try {
+                const { data, error } = await supabase
+                    .from('bookings')
+                    .update({ status: 'confirmed' })
+                    .eq('booking_id', bookingId);
+
+                if (error) {
+                    console.error('Error confirming booking:', error);
+                    alert('Failed to confirm booking');
+                    return;
+                }
+
+                alert('Booking confirmed successfully!');
+                loadPendingBookings();
+                loadConfirmedBookings();
+            } catch (error) {
+                console.error('Error confirming booking:', error);
+                alert('Failed to confirm booking');
+            }
+        }
+
+        async function rejectBooking(bookingId) {
+            try {
+                const { data, error } = await supabase
+                    .from('bookings')
+                    .update({ status: 'rejected' })
+                    .eq('booking_id', bookingId);
+
+                if (error) {
+                    console.error('Error rejecting booking:', error);
+                    alert('Failed to reject booking');
+                    return;
+                }
+
+                alert('Booking rejected successfully!');
+                loadPendingBookings();
+            } catch (error) {
+                console.error('Error rejecting booking:', error);
+                alert('Failed to reject booking');
+            }
+        }
+
+        async function loadConfirmedBookings() {
+            try {
+                // Get turfs managed by this admin
+                const { data: adminTurfsData, error: turfsError } = await supabase
+                    .from('turfs')
+                    .select('turf_id')
+                    .eq('admin_code', currentAdmin.admin_code)
+                    .eq('admin_password', currentAdmin.admin_password);
+
+                if (turfsError) {
+                    console.error('Error loading admin turfs:', turfsError);
+                    return;
+                }
+
+                const turfIds = adminTurfsData.map(turf => turf.turf_id);
+
+                // Get confirmed bookings for admin's turfs
+                const { data: bookingsData, error } = await supabase
+                    .from('bookings')
+                    .select(`
+                        *,
+                        turfs (name, price)
+                    `)
+                    .in('turf_id', turfIds)
+                    .eq('status', 'confirmed')
+                    .order('booking_date', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading confirmed bookings:', error);
+                    return;
+                }
+
+                confirmedBookings = bookingsData;
+                displayConfirmedBookings();
+            } catch (error) {
+                console.error('Error loading confirmed bookings:', error);
+            }
+        }
+
+        function displayConfirmedBookings() {
+            const container = document.getElementById('confirmedBookings');
+            
+            if (confirmedBookings.length === 0) {
+                container.innerHTML = '<p>No confirmed bookings.</p>';
+                return;
+            }
+
+            container.innerHTML = confirmedBookings.map(booking => `
+                <div class="booking-card confirmed">
+                    <div class="booking-header">
+                        <h3>${booking.turfs ? booking.turfs.name : 'Unknown Turf'}</h3>
+                        <span class="booking-id">ID: ${booking.booking_id}</span>
+                    </div>
+                    <div class="booking-details">
+                        <p><strong>Customer:</strong> ${booking.user_name}</p>
+                        <p><strong>Phone:</strong> ${booking.user_phone}</p>
+                        <p><strong>Date:</strong> ${booking.booking_date}</p>
+                        <p><strong>Time Slots:</strong> ${booking.time_slots}</p>
+                        <p><strong>Total Hours:</strong> ${booking.total_hours}</p>
+                        <p><strong>Total Price:</strong> ₹${booking.total_price}</p>
+                        <p><strong>Confirmed on:</strong> ${new Date(booking.created_at).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadAdminTurfs() {
+            try {
+                const { data: turfsData, error } = await supabase
+                    .from('turfs')
+                    .select('*')
+                    .eq('admin_code', currentAdmin.admin_code)
+                    .eq('admin_password', currentAdmin.admin_password);
+
+                if (error) {
+                    console.error('Error loading admin turfs:', error);
+                    return;
+                }
+
+                adminTurfs = turfsData;
+                displayAdminTurfs();
+            } catch (error) {
+                console.error('Error loading admin turfs:', error);
+            }
+        }
+
+        function displayAdminTurfs() {
+    const container = document.getElementById('turfsContainer');
+    
+    if (adminTurfs.length === 0) {
+        container.innerHTML = '<p>No turfs found.</p>';
+        return;
+    }
+
+    container.innerHTML = adminTurfs.map(turf => `
+        <div class="turf-card">
+            <div class="turf-header">
+                <h3>${turf.name}</h3>
+                <div class="turf-actions">
+                    <button onclick="editTurf(${turf.turf_id})">Edit</button>
+                    <button onclick="deleteTurf(${turf.turf_id})" class="delete-btn">Delete</button>
+                </div>
+            </div>
+            <div class="turf-details">
+                <p><strong>Price:</strong> ₹${turf.price}/hour</p>
+                <p><strong>Description:</strong> ${turf.description}</p>
+                <p><strong>Timings:</strong> ${formatTime(turf.opening_time)} - ${formatTime(turf.closing_time)}</p>
+                <p><strong>Created:</strong> ${new Date(turf.created_at).toLocaleDateString()}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+        function showAddTurfForm() {
+            document.getElementById('turfModalTitle').textContent = 'Add New Turf';
+            document.getElementById('turfForm').reset();
+            document.getElementById('turfId').value = '';
+            showModal('turfModal');
+        }
+
+        
+
+
+        async function deleteTurf(turfId) {
+            if (!confirm('Are you sure you want to delete this turf?')) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('turfs')
+                    .delete()
+                    .eq('turf_id', turfId);
+
+                if (error) {
+                    console.error('Error deleting turf:', error);
+                    alert('Failed to delete turf');
+                    return;
+                }
+
+                alert('Turf deleted successfully!');
+                loadAdminTurfs();
+            } catch (error) {
+                console.error('Error deleting turf:', error);
+                alert('Failed to delete turf');
+            }
+        }
+
+        // Handle turf form submission
+        // Update your turfForm event listener
+
+
+        // Tab navigation functions
+        function showAdminTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from all nav tabs
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(navTab => navTab.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to selected nav tab
+            event.target.classList.add('active');
+
+            // Load data for the selected tab
+            if (tabName === 'bookings') {
+                loadPendingBookings();
+            } else if (tabName === 'confirmed') {
+                loadConfirmedBookings();
+            } else if (tabName === 'turfs') {
+                loadAdminTurfs();
+            }
+        }
+
+        // Modal functions
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Utility functions
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+
+        // Auto-refresh bookings every 30 seconds
+        setInterval(() => {
+            if (currentAdmin && document.getElementById('adminDashboard').style.display === 'block') {
+                const activeTab = document.querySelector('.nav-tab.active');
+                if (activeTab) {
+                    const tabText = activeTab.textContent.trim();
+                    if (tabText === 'Booking Requests') {
+                        loadPendingBookings();
+                    } else if (tabText === 'Confirmed Bookings') {
+                        loadConfirmedBookings();
+                    }
+                }
+            }
+        }, 30000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // Add this to your existing JavaScript in admin.html
+
+let deferredPrompt;
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+        try {
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            console.log('Admin SW registered:', registration.scope);
+            
+            // Update handling
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        if (confirm('New admin version available! Reload?')) {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+        } catch (error) {
+            console.log('Admin SW registration failed:', error);
+        }
+    });
+}
+
+// PWA Install Prompt for Admin
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showAdminInstallPrompt();
+});
+
+function showAdminInstallPrompt() {
+    const installBtn = document.createElement('button');
+    installBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7,10 12,15 17,10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Install Admin App
+    `;
+    installBtn.className = 'install-admin-btn';
+    installBtn.addEventListener('click', installAdminApp);
+    
+    // Add to header
+    const header = document.querySelector('.header');
+    if (header && deferredPrompt) {
+        header.appendChild(installBtn);
+    }
+}
+
+async function installAdminApp() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`Admin install: ${outcome}`);
+        deferredPrompt = null;
+        
+        const installBtn = document.querySelector('.install-admin-btn');
+        if (installBtn) installBtn.remove();
+    }
+}
+
+// Handle app installation
+window.addEventListener('appinstalled', (evt) => {
+    console.log('Admin PWA installed');
+    const installBtn = document.querySelector('.install-admin-btn');
+    if (installBtn) installBtn.remove();
+});
+
+        // Handle Enter key press in admin login
+        document.getElementById('adminCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                adminLogin();
+            }
+        });
+
+        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                adminLogin();
+            }
+        });
+    </script>
+    </body>
+    </html>

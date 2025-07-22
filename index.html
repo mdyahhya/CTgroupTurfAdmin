@@ -633,6 +633,59 @@ body {
     min-height: 100vh;
 }
 
+.turf-header-section {
+    text-align: center;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.turf-main-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0 auto;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+}
+
+.admin-panel-subtitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #7f8c8d;
+    margin: 5px auto 0 auto;
+    text-transform: none;
+    letter-spacing: normal;
+    text-align: center;
+}
+
+.admin-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    
+}
+
+.admin-info span {
+    font-size: 14px;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+/* Mobile responsive */
+@media (max-width: 375px) {
+    .turf-main-title {
+        font-size: 20px;
+        padding: 8px 0;
+    }
+}
 
     </style>
 </head>
@@ -651,12 +704,16 @@ body {
     <!-- Admin Dashboard -->
     <div id="adminDashboard" class="dashboard">
         <div class="header">
-            <h1>Admin Dashboard</h1>
-            <div class="admin-info">
-                <span id="adminName"></span>
-                <button onclick="adminLogout()">Logout</button>
-            </div>
-        </div>
+    <div class="turf-header-section">
+        <h1 id="turfName" class="turf-main-title">Loading...</h1>
+        <h2 class="admin-panel-subtitle">Admin Panel for bookings management </h2>
+    </div>
+    <div class="admin-info">
+        <span id="adminName"></span>
+        <button onclick="adminLogout()">Logout</button>
+    </div>
+</div>
+
 
         <div class="nav-tabs">
             <div class="nav-tab active" onclick="showAdminTab('bookings')">Booking Requests</div>
@@ -679,90 +736,236 @@ body {
         <!-- Manage Turfs Tab -->
         <div id="turfsTab" class="tab-content">
             <h2>Manage Turfs</h2>
-            <button onclick="showAddTurfForm()">Add New Turf</button>
+            <!-- <button onclick="showAddTurfForm()">Add New Turf</button> -->
             <div id="turfsContainer"></div>
         </div>
     </div>
 
     <!-- Add/Edit Turf Modal -->
     <!-- Add/Edit Turf Modal -->
-        <div id="turfModal" class="modal">
-            <div class="modal-content">
+        <!-- Add/Edit Turf Modal -->
+<!-- Add/Edit Turf Modal -->
+<div id="turfModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('turfModal')">&times;</span>
+        <h2 id="turfModalTitle">Add New Turf</h2>
+        <form id="turfForm">
+            <input type="hidden" id="turfId">
+            
+            <!-- Basic Info -->
+            <label for="turfName">Turf Name:</label>
+            <input type="text" id="turfName" placeholder="Turf Name" required>
+            
+            <label for="turfDescription">Description:</label>
+            <textarea id="turfDescription" placeholder="Description" rows="4" required></textarea>
+            
+            <!-- Day Time Pricing -->
+            <div class="pricing-section">
+                <h4>Day Time Pricing</h4>
+                <label>Start Time:</label>
+                <div class="time-input-container">
+                    <select id="dayStartHour" required>
+                        <option value="">Hour</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select id="dayStartMinute" required>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                    <select id="dayStartPeriod" required>
+                        <option value="">AM/PM</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
                 
-                <h2 id="turfModalTitle">Add New Turf</h2>
-                <form id="turfForm">
-    <input type="hidden" id="turfId">
-    <input type="text" id="turfName" placeholder="Turf Name" required>
-    <input type="number" id="turfPrice" placeholder="Price per hour" min="1" step="1" required>
-    <textarea id="turfDescription" placeholder="Description" rows="4" required></textarea>
-    <input type="text" id="turfImageUrls" placeholder="Image URLs (comma separated)">
-    
-    <label for="openingTime">Opening Time:</label>
-    <div class="time-input-container">
-        <select id="openingHour" required>
-            <option value="">Hour</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-        </select>
-        <select id="openingMinute" required>
-            <option value="00">00</option>
-            <option value="15">15</option>
-            <option value="30">30</option>
-            <option value="45">45</option>
-        </select>
-        <select id="openingPeriod" required>
-            <option value="">AM/PM</option>
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-        </select>
-    </div>
-    
-    <label for="closingTime">Closing Time:</label>
-    <div class="time-input-container">
-        <select id="closingHour" required>
-            <option value="">Hour</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-        </select>
-        <select id="closingMinute" required>
-            <option value="00">00</option>
-            <option value="15">15</option>
-            <option value="30">30</option>
-            <option value="45">45</option>
-        </select>
-        <select id="closingPeriod" required>
-            <option value="">AM/PM</option>
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-        </select>
-    </div>
-    
-    <button type="submit">Save Turf</button>
-</form>
-
-
+                <label>End Time:</label>
+                <div class="time-input-container">
+                    <select id="dayEndHour" required>
+                        <option value="">Hour</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select id="dayEndMinute" required>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                    <select id="dayEndPeriod" required>
+                        <option value="">AM/PM</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+                
+                <label>Price per hour:</label>
+                <input type="number" id="dayPrice" placeholder="₹ per hour" min="1" required>
             </div>
-        </div>
+            
+            <!-- Evening Time Pricing -->
+            <div class="pricing-section">
+                <h4>Evening Time Pricing</h4>
+                <label>Start Time:</label>
+                <div class="time-input-container">
+                    <select id="eveningStartHour" required>
+                        <option value="">Hour</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select id="eveningStartMinute" required>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                    <select id="eveningStartPeriod" required>
+                        <option value="">AM/PM</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+                
+                <label>End Time:</label>
+                <div class="time-input-container">
+                    <select id="eveningEndHour" required>
+                        <option value="">Hour</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select id="eveningEndMinute" required>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                    <select id="eveningEndPeriod" required>
+                        <option value="">AM/PM</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+                
+                <label>Price per hour:</label>
+                <input type="number" id="eveningPrice" placeholder="₹ per hour" min="1" required>
+            </div>
+            
+            <!-- Images -->
+            <label for="turfImageUrls">Image URLs:</label>
+            <input type="text" id="turfImageUrls" placeholder="Image URLs (comma separated)">
+            
+            <!-- Overall Operating Hours -->
+            <div class="operating-hours">
+                <h4>Operating Hours</h4>
+                <label for="openingTime">Opening Time:</label>
+                <div class="time-input-container">
+                    <select id="openingHour" required>
+                        <option value="">Hour</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select id="openingMinute" required>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                    <select id="openingPeriod" required>
+                        <option value="">AM/PM</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+                
+                <label for="closingTime">Closing Time:</label>
+                <div class="time-input-container">
+                    <select id="closingHour" required>
+                        <option value="">Hour</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select id="closingMinute" required>
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+                    <select id="closingPeriod" required>
+                        <option value="">AM/PM</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit">Save Turf</button>
+        </form>
+    </div>
+</div>
+            
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -851,24 +1054,56 @@ function editTurf(turfId) {
     const turf = adminTurfs.find(t => t.turf_id === turfId);
     if (!turf) return;
 
+    console.log('Editing turf:', turf); // Debug log
+
     document.getElementById('turfModalTitle').textContent = 'Edit Turf';
     document.getElementById('turfId').value = turf.turf_id;
-    document.getElementById('turfName').value = turf.name;
-    document.getElementById('turfPrice').value = turf.price;
-    document.getElementById('turfDescription').value = turf.description;
-    document.getElementById('turfImageUrls').value = turf.image_urls || '';
+    document.getElementById('turfName').value = turf.name || '';
+    document.getElementById('turfDescription').value = turf.description || '';
     
-    // Convert and set opening time
-    const openingTime = convertTo12Hour(turf.opening_time);
+    // Day pricing start time
+    const dayStart = convertTo12Hour(turf.day_start_time || '06:00');
+    document.getElementById('dayStartHour').value = dayStart.hour;
+    document.getElementById('dayStartMinute').value = dayStart.minute;
+    document.getElementById('dayStartPeriod').value = dayStart.period;
+    
+    // Day pricing end time
+    const dayEnd = convertTo12Hour(turf.day_end_time || '18:00');
+    document.getElementById('dayEndHour').value = dayEnd.hour;
+    document.getElementById('dayEndMinute').value = dayEnd.minute;
+    document.getElementById('dayEndPeriod').value = dayEnd.period;
+    
+    // Day price
+    document.getElementById('dayPrice').value = turf.day_price || '';
+    
+    // Evening pricing start time
+    const eveningStart = convertTo12Hour(turf.evening_start_time || '18:00');
+    document.getElementById('eveningStartHour').value = eveningStart.hour;
+    document.getElementById('eveningStartMinute').value = eveningStart.minute;
+    document.getElementById('eveningStartPeriod').value = eveningStart.period;
+    
+    // Evening pricing end time
+    const eveningEnd = convertTo12Hour(turf.evening_end_time || '23:59');
+    document.getElementById('eveningEndHour').value = eveningEnd.hour;
+    document.getElementById('eveningEndMinute').value = eveningEnd.minute;
+    document.getElementById('eveningEndPeriod').value = eveningEnd.period;
+    
+    // Evening price
+    document.getElementById('eveningPrice').value = turf.evening_price || '';
+    
+    // Operating hours
+    const openingTime = convertTo12Hour(turf.opening_time || '06:00');
     document.getElementById('openingHour').value = openingTime.hour;
     document.getElementById('openingMinute').value = openingTime.minute;
     document.getElementById('openingPeriod').value = openingTime.period;
     
-    // Convert and set closing time
-    const closingTime = convertTo12Hour(turf.closing_time);
+    const closingTime = convertTo12Hour(turf.closing_time || '23:00');
     document.getElementById('closingHour').value = closingTime.hour;
     document.getElementById('closingMinute').value = closingTime.minute;
     document.getElementById('closingPeriod').value = closingTime.period;
+    
+    // Images
+    document.getElementById('turfImageUrls').value = turf.image_urls || '';
     
     showModal('turfModal');
 }
@@ -879,115 +1114,132 @@ document.getElementById('turfForm').addEventListener('submit', async function(e)
     e.preventDefault();
 
     const turfId = document.getElementById('turfId').value;
+    
+    // Only allow editing existing turfs (no new turf creation)
+    if (!turfId) {
+        alert('Error: No turf selected for editing. Cannot save.');
+        return;
+    }
+
     const turfName = document.getElementById('turfName').value.trim();
-    const turfPrice = parseInt(document.getElementById('turfPrice').value);
     const turfDescription = document.getElementById('turfDescription').value.trim();
     const turfImageUrls = document.getElementById('turfImageUrls').value.trim();
     
-    // Get opening time values
+    // Get day pricing values
+    const dayStartHour = document.getElementById('dayStartHour').value;
+    const dayStartMinute = document.getElementById('dayStartMinute').value;
+    const dayStartPeriod = document.getElementById('dayStartPeriod').value;
+    const dayEndHour = document.getElementById('dayEndHour').value;
+    const dayEndMinute = document.getElementById('dayEndMinute').value;
+    const dayEndPeriod = document.getElementById('dayEndPeriod').value;
+    const dayPrice = parseInt(document.getElementById('dayPrice').value);
+    
+    // Get evening pricing values
+    const eveningStartHour = document.getElementById('eveningStartHour').value;
+    const eveningStartMinute = document.getElementById('eveningStartMinute').value;
+    const eveningStartPeriod = document.getElementById('eveningStartPeriod').value;
+    const eveningEndHour = document.getElementById('eveningEndHour').value;
+    const eveningEndMinute = document.getElementById('eveningEndMinute').value;
+    const eveningEndPeriod = document.getElementById('eveningEndPeriod').value;
+    const eveningPrice = parseInt(document.getElementById('eveningPrice').value);
+    
+    // Get opening/closing time values
     const openingHour = document.getElementById('openingHour').value;
     const openingMinute = document.getElementById('openingMinute').value;
     const openingPeriod = document.getElementById('openingPeriod').value;
-    
-    // Get closing time values
     const closingHour = document.getElementById('closingHour').value;
     const closingMinute = document.getElementById('closingMinute').value;
     const closingPeriod = document.getElementById('closingPeriod').value;
 
     // Validation
-    if (!turfName || !turfPrice || !turfDescription) {
+    if (!turfName || !turfDescription || !dayPrice || !eveningPrice) {
         alert('Please fill all required fields');
         return;
     }
 
-    if (!openingHour || !openingMinute || !openingPeriod) {
-        alert('Please select complete opening time');
+    if (!dayStartHour || !dayStartMinute || !dayStartPeriod || !dayEndHour || !dayEndMinute || !dayEndPeriod) {
+        alert('Please select complete day time pricing');
         return;
     }
 
-    if (!closingHour || !closingMinute || !closingPeriod) {
-        alert('Please select complete closing time');
+    if (!eveningStartHour || !eveningStartMinute || !eveningStartPeriod || !eveningEndHour || !eveningEndMinute || !eveningEndPeriod) {
+        alert('Please select complete evening time pricing');
         return;
     }
 
-    if (turfPrice < 1) {
-        alert('Price must be at least ₹1 per hour');
+    if (!openingHour || !openingMinute || !openingPeriod || !closingHour || !closingMinute || !closingPeriod) {
+        alert('Please select complete operating hours');
+        return;
+    }
+
+    if (dayPrice < 1 || eveningPrice < 1) {
+        alert('Prices must be at least ₹1 per hour');
         return;
     }
 
     // Convert to 24-hour format for storage
+    const dayStartTime = convertTo24Hour(dayStartHour, dayStartMinute, dayStartPeriod);
+    const dayEndTime = convertTo24Hour(dayEndHour, dayEndMinute, dayEndPeriod);
+    const eveningStartTime = convertTo24Hour(eveningStartHour, eveningStartMinute, eveningStartPeriod);
+    const eveningEndTime = convertTo24Hour(eveningEndHour, eveningEndMinute, eveningEndPeriod);
     const openingTime = convertTo24Hour(openingHour, openingMinute, openingPeriod);
     const closingTime = convertTo24Hour(closingHour, closingMinute, closingPeriod);
-    
-    // Updated validation logic for overnight operations
-    const openMinutes = convertTimeToMinutes(openingTime);
-    let closeMinutes = convertTimeToMinutes(closingTime);
-    
-    // If closing time is earlier in 24-hour format, assume it's next day
-    if (closeMinutes <= openMinutes) {
-        // Allow overnight operations (e.g., 6 AM to 12 AM next day)
-        closeMinutes += 24 * 60; // Add 24 hours worth of minutes
-    }
-    
-    // Only validate if it's the same day and closing is not at least 1 hour later
-    const timeDifference = closeMinutes - openMinutes;
-    if (timeDifference < 60) { // Less than 1 hour
-        alert('Closing time must be at least 1 hour after opening time');
-        return;
-    }
 
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Saving...';
+    submitBtn.textContent = 'Updating...';
     submitBtn.disabled = true;
 
     try {
         const turfData = {
             name: turfName,
-            price: turfPrice,
             description: turfDescription,
-            image_urls: turfImageUrls || null,
+            day_price: dayPrice,
+            day_start_time: dayStartTime,
+            day_end_time: dayEndTime,
+            evening_price: eveningPrice,
+            evening_start_time: eveningStartTime,
+            evening_end_time: eveningEndTime,
             opening_time: openingTime,
             closing_time: closingTime,
-            admin_code: currentAdmin.admin_code,
-            admin_password: currentAdmin.admin_password
+            image_urls: turfImageUrls || null
+            // Removed admin_code and admin_password from update (they shouldn't change)
         };
 
-        let result;
-        if (turfId) {
-            result = await supabase
-                .from('turfs')
-                .update(turfData)
-                .eq('turf_id', parseInt(turfId))
-                .select();
-        } else {
-            result = await supabase
-                .from('turfs')
-                .insert([turfData])
-                .select();
-        }
+        console.log('Updating turf data:', turfData);
+
+        // ONLY UPDATE - No insert option
+        const result = await supabase
+            .from('turfs')
+            .update(turfData)
+            .eq('turf_id', parseInt(turfId))
+            .select();
 
         if (result.error) {
-            console.error('Error saving turf:', result.error);
-            alert(`Failed to save turf: ${result.error.message}`);
+            console.error('Error updating turf:', result.error);
+            alert(`Failed to update turf: ${result.error.message}`);
             return;
         }
 
-        alert(turfId ? 'Turf updated successfully!' : 'Turf added successfully!');
+        if (!result.data || result.data.length === 0) {
+            alert('No turf was updated. Please check if the turf exists.');
+            return;
+        }
+
+        alert('Turf updated successfully!');
         closeModal('turfModal');
         loadAdminTurfs();
         
-        this.reset();
-        document.getElementById('turfId').value = '';
-        
     } catch (error) {
-        console.error('Error saving turf:', error);
-        alert('Failed to save turf. Please try again.');
+        console.error('Error updating turf:', error);
+        alert('Failed to update turf. Please try again.');
     } finally {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }
 });
+
+
 
 // Helper function to convert time to minutes for comparison
 function convertTimeToMinutes(timeString) {
@@ -996,21 +1248,21 @@ function convertTimeToMinutes(timeString) {
 }
 
 // Clear form function
-function showAddTurfForm() {
-    document.getElementById('turfModalTitle').textContent = 'Add New Turf';
-    document.getElementById('turfForm').reset();
-    document.getElementById('turfId').value = '';
+// function showAddTurfForm() {
+//     document.getElementById('turfModalTitle').textContent = 'Add New Turf';
+//     document.getElementById('turfForm').reset();
+//     document.getElementById('turfId').value = '';
     
-    // Reset dropdowns to default
-    document.getElementById('openingHour').value = '';
-    document.getElementById('openingMinute').value = '00';
-    document.getElementById('openingPeriod').value = '';
-    document.getElementById('closingHour').value = '';
-    document.getElementById('closingMinute').value = '00';
-    document.getElementById('closingPeriod').value = '';
+//    
+//     document.getElementById('openingHour').value = '';
+//     document.getElementById('openingMinute').value = '00';
+//     document.getElementById('openingPeriod').value = '';
+//     document.getElementById('closingHour').value = '';
+//     document.getElementById('closingMinute').value = '00';
+//     document.getElementById('closingPeriod').value = '';
     
-    showModal('turfModal');
-}
+//     showModal('turfModal');
+// }
 
 // Update the formatTimeForInput function
 function formatTimeForInput(timeString) {
@@ -1205,13 +1457,25 @@ document.addEventListener('keydown', function(e) {
 
         
 
-        function showAdminDashboard() {
-            document.getElementById('adminDashboard').style.display = 'block';
-            document.getElementById('adminName').textContent = currentAdmin.name;
-            loadPendingBookings();
-            loadConfirmedBookings();
-            loadAdminTurfs();
-        }
+        async function showAdminDashboard() {
+    document.getElementById('adminDashboard').style.display = 'block';
+    
+    // Display admin name
+    document.getElementById('adminName').textContent = `Admin: ${currentAdmin.admin_code}`;
+    
+    // Load turfs first, then display turf name
+    await loadAdminTurfs();
+    
+    // Display turf name after turfs are loaded
+    if (adminTurfs && adminTurfs.length > 0) {
+        document.getElementById('turfName').textContent = `${adminTurfs[0].name}`;
+    } else {
+        document.getElementById('turfName').textContent = 'Turf: None';
+    }
+    
+    showTab('bookings');
+}
+
 
         async function loadPendingBookings() {
             try {
@@ -1420,32 +1684,27 @@ document.addEventListener('keydown', function(e) {
         return;
     }
 
+    // Make sure edit buttons are included
     container.innerHTML = adminTurfs.map(turf => `
         <div class="turf-card">
             <div class="turf-header">
                 <h3>${turf.name}</h3>
                 <div class="turf-actions">
-                    <button onclick="editTurf(${turf.turf_id})">Edit</button>
+                    <button onclick="editTurf(${turf.turf_id})" class="edit-btn">Edit</button>
                     <button onclick="deleteTurf(${turf.turf_id})" class="delete-btn">Delete</button>
                 </div>
             </div>
             <div class="turf-details">
-                <p><strong>Price:</strong> ₹${turf.price}/hour</p>
+                <p><strong>Day Price:</strong> ₹${turf.day_price || 'Not set'}/hour</p>
+                <p><strong>Evening Price:</strong> ₹${turf.evening_price || 'Not set'}/hour</p>
                 <p><strong>Description:</strong> ${turf.description}</p>
-                <p><strong>Timings:</strong> ${formatTime(turf.opening_time)} - ${formatTime(turf.closing_time)}</p>
-                <p><strong>Created:</strong> ${new Date(turf.created_at).toLocaleDateString()}</p>
+                <p><strong>Operating Hours:</strong> ${formatTime(turf.opening_time)} - ${formatTime(turf.closing_time)}</p>
             </div>
         </div>
     `).join('');
 }
 
-
-        function showAddTurfForm() {
-            document.getElementById('turfModalTitle').textContent = 'Add New Turf';
-            document.getElementById('turfForm').reset();
-            document.getElementById('turfId').value = '';
-            showModal('turfModal');
-        }
+        
 
         
 

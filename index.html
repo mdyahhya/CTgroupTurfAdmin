@@ -3028,20 +3028,20 @@ async function unBookSlot(slot, bookingId) {
     try {
         const { error } = await supabase
             .from('bookings')
-            .update({ status: 'cancelled' })
+            .delete()
             .eq('booking_id', bookingId);
 
         if (error) {
-            console.error('Error cancelling booking:', error);
+            console.error('Error deleting booking:', error);
             return;
         }
 
         loadSlotView(); // Refresh the view instantly
     } catch (error) {
-        console.error('Error cancelling booking:', error);
+        console.error('Error deleting booking:', error);
     }
 }
-// Add this helper function if you don't have it
+
 function getPriceForTimeSlot(turf, timeSlot) {
     const [startTime] = timeSlot.split('-');
     const [hour] = startTime.split(':').map(Number);
@@ -3056,7 +3056,7 @@ function getPriceForTimeSlot(turf, timeSlot) {
     }
 }
 
-// Add this near your other global variables
+
 function formatDateForDB(date) {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');

@@ -1260,6 +1260,94 @@ body {
     cursor: pointer;
     color: #6b7280;
 }
+/* Slot Grid Styles */
+.slots-grid-container {
+    margin-top: 20px;
+}
+
+.admin-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.time-slot-box {
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.time-slot-box.available {
+    background-color: #28a745;
+    color: white;
+}
+
+.time-slot-box.available:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.time-slot-box.booked {
+    background-color: #dc3545;
+    color: white;
+    cursor: not-allowed;
+}
+
+.time-slot-box .time-text {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.time-slot-box .customer-name {
+    font-size: 10px;
+    margin-top: 4px;
+    opacity: 0.9;
+}
+
+.time-slot-box .price-text {
+    font-size: 11px;
+    margin-top: 2px;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .admin-slots-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .time-slot-box {
+        height: 70px;
+    }
+}
+
+.add-booking-btn {
+    
+    font-weight: 400;
+    color: white;
+    background: var(--primary-hover, #0056b3);
+    border: none;
+    border-radius: 6px; /* Reduced border radius */
+    padding: 3px 9px;
+    
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-booking-btn:hover {
+    background: var(--primary-hover, #0056b3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 
     </style>
 </head>
@@ -1312,25 +1400,26 @@ body {
             </div>
 
             <!-- Confirmed Bookings Tab -->
-            <div id="confirmedTab" class="tab-content">
-                <div class="tab-header">
-                    <h2>Confirmed Bookings</h2>
-                    <div class="tab-actions">
-                        <button class="refresh-btn" onclick="loadConfirmedBookings()">
-                            🔄 Refresh
-                        </button>
-                    </div>
-                </div>
-                <div id="confirmedBookings" class="bookings-container"></div>
-            </div>
-
+<div id="confirmedTab" class="tab-content">
+    <div class="tab-header">
+        <h2>Slot Management</h2>
+        <div class="tab-actions">
+            <input type="date" id="slotDate" onchange="loadSlotView()" min="">
+            <button class="refresh-btn" onclick="loadSlotView()">🔄 Refresh</button>
+        </div>
+    </div>
+    <div class="slots-grid-container">
+        <div id="slotsGrid" class="admin-slots-grid"></div>
+    </div>
+</div>
             <!-- Pre-Bookings Tab -->
             <div id="prebookingsTab" class="tab-content">
                 <div class="tab-header">
                     <h2>Pre-Bookings & Fixed Bookings</h2>
                     <div class="tab-actions">
                         <button class="refresh-btn" onclick="loadPreBookings()">🔄 Refresh</button>
-                        <button onclick="showAddPreBookingForm()">Add Pre-Booking</button>
+                        <button class="add-booking-btn" onclick="showAddPreBookingForm()">Add Pre-Booking</button>
+
                     </div>
                 </div>
                 <div id="preBookings" class="bookings-container"></div>
@@ -1757,6 +1846,9 @@ body {
                 return false;
             }
         }
+
+
+        
         // Add this helper function near the top of your script (after the global variables)
 function formatDateForDB(date) {
     const year = date.getFullYear();
@@ -2378,8 +2470,8 @@ for (let i = 0; i < 42; i++) {
     dayElement.className = 'calendar-day';
     dayElement.textContent = current.getDate();
     
-    const dateString = formatDateForDB(current); // ← FIXED
-        
+    const dateString = formatDateForDB(current);
+
         if (current.getMonth() !== month) {
             dayElement.classList.add('other-month');
         }
@@ -2781,44 +2873,198 @@ async function deletePreBooking(bookingId) {
             }
         }
 
-        async function loadConfirmedBookings() {
-    try {
-        const { data: adminTurfsData, error: turfsError } = await supabase
-            .from('turfs')
-            .select('turf_id')
-            .eq('admin_code', currentAdmin.admin_code)
-            .eq('admin_password', currentAdmin.admin_password);
+       async function loadConfirmedBookings() {
+    // Set today's date as default
+    const today = new Date();
+    const todayString = formatDateForDB(today);
+    document.getElementById('slotDate').value = todayString;
+    document.getElementById('slotDate').min = todayString;
+    
+    loadSlotView();
+}
 
-        if (turfsError) {
-            console.error('Error loading admin turfs:', turfsError);
+// Add this new function
+async function loadSlotView() {
+    const dateInput = document.getElementById('slotDate');
+    const selectedDate = dateInput.value;
+    
+    if (!selectedDate) {
+        const today = new Date();
+        dateInput.value = formatDateForDB(today);
+        loadSlotView();
+        return;
+    }
+
+    try {
+        // Get admin's turf
+        if (!adminTurfs || adminTurfs.length === 0) {
+            await loadAdminTurfs();
+        }
+        
+        if (adminTurfs.length === 0) {
+            document.getElementById('slotsGrid').innerHTML = '<p>No turfs found</p>';
             return;
         }
-
-        const turfIds = adminTurfsData.map(turf => turf.turf_id);
-
-        // Get only regular confirmed bookings (excluding pre-bookings)
+        
+        const turf = adminTurfs[0];
+        
+        // Load all bookings for this date
         const { data: bookingsData, error } = await supabase
             .from('bookings')
-            .select(`
-                *,
-                turfs (name, price)
-            `)
-            .in('turf_id', turfIds)
-            .eq('status', 'confirmed')
-            .neq('booking_type', 'pre_booking') // Exclude pre-bookings
-            .order('booking_date', { ascending: false });
+            .select('*')
+            .eq('turf_id', turf.turf_id)
+            .eq('booking_date', selectedDate)
+            .in('status', ['confirmed', 'pending']);
 
         if (error) {
-            console.error('Error loading confirmed bookings:', error);
+            console.error('Error loading bookings:', error);
             return;
         }
 
-        confirmedBookings = bookingsData;
-        displayConfirmedBookings();
+        // Process booked slots
+        const bookedSlots = new Map();
+        
+        if (bookingsData) {
+            bookingsData.forEach(booking => {
+                if (booking.time_slots) {
+                    const slots = booking.time_slots.split(',').map(s => s.trim());
+                    slots.forEach(slot => {
+                        bookedSlots.set(slot, {
+                            customer: booking.user_name,
+                            phone: booking.user_phone,
+                            status: booking.status,
+                            bookingId: booking.booking_id
+                        });
+                    });
+                }
+            });
+        }
+
+        // Display the 18 time slots
+        displaySlotGrid(bookedSlots, turf, selectedDate);
+        
     } catch (error) {
-        console.error('Error loading confirmed bookings:', error);
+        console.error('Error loading slot view:', error);
     }
 }
+
+// Add this new function
+function displaySlotGrid(bookedSlots, turf, selectedDate) {
+    const container = document.getElementById('slotsGrid');
+    const timeSlots = [];
+    
+    // Generate 18 time slots from 6 AM to 12 AM
+    for (let hour = 6; hour < 24; hour++) {
+        const timeSlot = `${hour.toString().padStart(2, '0')}:00-${(hour + 1).toString().padStart(2, '0')}:00`;
+        timeSlots.push(timeSlot);
+    }
+    
+    let slotsHtml = '';
+    
+    timeSlots.forEach(slot => {
+        const booking = bookedSlots.get(slot);
+        const isBooked = booking !== undefined;
+        const price = getPriceForTimeSlot(turf, slot);
+        
+        // Format time display (6-7, 7-8, etc.)
+        const [startHour] = slot.split('-')[0].split(':');
+        const endHour = parseInt(startHour) + 1;
+        const timeDisplay = `${parseInt(startHour)}-${endHour}`;
+        
+        let slotClass = isBooked ? 'booked' : 'available';
+        let customerInfo = '';
+        let onClickAction = '';
+        
+        if (isBooked) {
+            customerInfo = `<div class="customer-name">${booking.customer}</div>`;
+            onClickAction = `onclick="unBookSlot('${slot}', ${booking.bookingId})"`;
+        } else {
+            onClickAction = `onclick="quickBookSlot('${slot}', ${price}, '${selectedDate}')"`;
+        }
+        
+        slotsHtml += `
+            <div class="time-slot-box ${slotClass}" ${onClickAction} data-slot="${slot}">
+                <div class="time-text">${timeDisplay}</div>
+                <div class="price-text">₹${price}</div>
+                ${customerInfo}
+            </div>
+        `;
+    });
+    
+    container.innerHTML = slotsHtml;
+}
+
+// Add these new functions for quick booking
+async function quickBookSlot(slot, price, date) {
+    try {
+        const bookingData = {
+            turf_id: adminTurfs[0].turf_id,
+            user_name: 'Admin Booking',
+            user_phone: 'N/A',
+            booking_date: date,
+            time_slots: slot,
+            total_hours: 1,
+            total_price: price,
+            status: 'confirmed',
+            booking_type: 'admin_created'
+        };
+
+        const { error } = await supabase
+            .from('bookings')
+            .insert([bookingData]);
+
+        if (error) {
+            console.error('Error creating booking:', error);
+            return;
+        }
+
+        loadSlotView(); // Refresh the view instantly
+    } catch (error) {
+        console.error('Error creating booking:', error);
+    }
+}
+
+async function unBookSlot(slot, bookingId) {
+    try {
+        const { error } = await supabase
+            .from('bookings')
+            .update({ status: 'cancelled' })
+            .eq('booking_id', bookingId);
+
+        if (error) {
+            console.error('Error cancelling booking:', error);
+            return;
+        }
+
+        loadSlotView(); // Refresh the view instantly
+    } catch (error) {
+        console.error('Error cancelling booking:', error);
+    }
+}
+// Add this helper function if you don't have it
+function getPriceForTimeSlot(turf, timeSlot) {
+    const [startTime] = timeSlot.split('-');
+    const [hour] = startTime.split(':').map(Number);
+    
+    const [dayStart] = turf.day_start_time.split(':').map(Number);
+    const [dayEnd] = turf.day_end_time.split(':').map(Number);
+    
+    if (hour >= dayStart && hour < dayEnd) {
+        return turf.day_price || 500;
+    } else {
+        return turf.evening_price || 700;
+    }
+}
+
+// Add this near your other global variables
+function formatDateForDB(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+
 
         function displayConfirmedBookings() {
             const container = document.getElementById('confirmedBookings');
